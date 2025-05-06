@@ -9,6 +9,7 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 import * as fs from "fs";
 import path from "path";
+import cors from "cors";
 
 // Importer les routes
 import organisationRouter from '../src/routes/organisation.routes';
@@ -35,7 +36,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 // Middlewares
-//app.use(cors());
+app.use(cors());
 app.use(express.json());
 
 // Routes avec préfixe '/api'
