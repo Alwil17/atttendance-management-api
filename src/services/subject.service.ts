@@ -1,10 +1,11 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateSubjectDto } from "../dto/subject.dto";
 import { Subject } from "../entity/Subject.entity";
 
 export class SubjectService {
-    private subjectRepository = AppDataSource.getRepository(Subject);
+    private readonly subjectRepository = AppDataSource.getRepository(Subject);
 
-    async createSubject(data: Partial<Subject>): Promise<Subject> {
+    async createSubject(data: Partial<CreateSubjectDto>): Promise<Subject> {
         const subject = this.subjectRepository.create(data);
         return await this.subjectRepository.save(subject);
     }

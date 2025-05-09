@@ -2,7 +2,7 @@ import { AppDataSource } from "../config/data-source";
 import { Notification } from "../entity/Notification.entity";
 
 export class NotificationService {
-    private notificationRepository = AppDataSource.getRepository(Notification);
+    private readonly notificationRepository = AppDataSource.getRepository(Notification);
 
     async createNotification(data: Partial<Notification>): Promise<Notification> {
         const notification = this.notificationRepository.create(data);

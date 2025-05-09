@@ -1,10 +1,11 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateOrganisationDto } from "../dto/organisation.dto";
 import { Organisation } from "../entity/Organisation.entity";
 
 export class OrganisationService {
-    private organisationRepository = AppDataSource.getRepository(Organisation);
+    private readonly organisationRepository = AppDataSource.getRepository(Organisation);
 
-    async createOrganisation(data: Partial<Organisation>): Promise<Organisation> {
+    async createOrganisation(data: Partial<CreateOrganisationDto>): Promise<Organisation> {
         const organisation = this.organisationRepository.create(data);
         return await this.organisationRepository.save(organisation);
     }

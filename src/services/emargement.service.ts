@@ -1,11 +1,24 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateEmargementDto } from "../dto/emargement.dto";
+import { ClassSession } from "../entity/ClassSession.entity";
 import { Emargement, EmargementStatus } from "../entity/Emargement.entity";
+import { User } from "../entity/User.entity";
 
 export class EmargementService {
-    private emargementRepository = AppDataSource.getRepository(Emargement);
+    private readonly emargementRepository = AppDataSource.getRepository(Emargement);
+    private readonly userRepo = AppDataSource.getRepository(User);
+    private readonly sessionRepository = AppDataSource.getRepository(ClassSession);
 
-    async createEmargement(data: Partial<Emargement>): Promise<Emargement> {
-        const emargement = this.emargementRepository.create(data);
+    async createEmargement(data: Partial<CreateEmargementDto>): Promise<Emargement> {
+        const professor = await this.userRepo.findOneByOrFail({ id: data.professorId });
+        const classSession = await this.sessionRepository.findOneByOrFail({ id: data.classSessionId });
+
+        const { professorId, classSessionId, ...rest } = data;
+        const emargement = this.emargementRepository.create({
+            ...rest,
+            professor,
+            classSession
+        });
         return await this.emargementRepository.save(emargement);
     }
 
@@ -22,9 +35,26 @@ export class EmargementService {
         });
     }
 
-    async updateEmargement(id: string, data: Partial<Emargement>): Promise<Emargement | null> {
-        await this.emargementRepository.update(id, data);
-        return this.getEmargementById(id);
+    async updateEmargement(id: string, data: Partial<CreateEmargementDto>): Promise<Emargement | null> {
+        const emargement = await this.emargementRepository.findOneBy({ id });
+        if (!emargement) return null;
+
+        const { professorId, classSessionId, ...rest } = data;
+
+        // Si un nouvel ID de professeur est fourni
+        if (professorId) {
+            emargement.professor = await this.userRepo.findOneByOrFail({ id: professorId });
+        }
+
+        // Si un nouvel ID de session de classe est fourni
+        if (classSessionId) {
+            emargement.classSession = await this.sessionRepository.findOneByOrFail({ id: classSessionId });
+        }
+
+        // Mise à jour des autres champs simples
+        Object.assign(emargement, rest);
+
+        return await this.emargementRepository.save(emargement);
     }
 
     async setStatus(id: string, status: EmargementStatus): Promise<boolean> {

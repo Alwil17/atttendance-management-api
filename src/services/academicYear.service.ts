@@ -1,10 +1,11 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateAcademicYearDto } from "../dto/academic-year.dto";
 import { AcademicYear } from "../entity/AcademicYear.entity";
 
 export class AcademicYearService {
-    private academicYearRepository = AppDataSource.getRepository(AcademicYear);
+    private readonly academicYearRepository = AppDataSource.getRepository(AcademicYear);
 
-    async createAcademicYear(data: Partial<AcademicYear>): Promise<AcademicYear> {
+    async createAcademicYear(data: CreateAcademicYearDto): Promise<AcademicYear> {
         const academicYear = this.academicYearRepository.create(data);
         return await this.academicYearRepository.save(academicYear);
     }
@@ -17,7 +18,7 @@ export class AcademicYearService {
         return await this.academicYearRepository.find();
     }
 
-    async updateAcademicYear(id: string, data: Partial<AcademicYear>): Promise<AcademicYear | null> {
+    async updateAcademicYear(id: string, data: Partial<CreateAcademicYearDto>): Promise<AcademicYear | null> {
         await this.academicYearRepository.update(id, data);
         return this.getAcademicYearById(id);
     }
