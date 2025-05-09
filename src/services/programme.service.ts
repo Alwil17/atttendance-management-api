@@ -1,11 +1,20 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateProgrammeDto } from "../dto/programme.dto";
+import { Departement } from "../entity/Departement.entity";
 import { Programme } from "../entity/Programme.entity";
 
 export class ProgrammeService {
-    private programmeRepository = AppDataSource.getRepository(Programme);
+    private readonly programmeRepository = AppDataSource.getRepository(Programme);
+    private readonly departementRepository = AppDataSource.getRepository(Departement);
 
-    async createProgramme(data: Partial<Programme>): Promise<Programme> {
-        const programme = this.programmeRepository.create(data);
+    async createProgramme(data: Partial<CreateProgrammeDto>): Promise<Programme> {
+        const departement = await this.departementRepository.findOneByOrFail({ id: data.departementId})
+
+        const { departementId, ...rest } = data;
+        const programme = this.programmeRepository.create({
+            ...rest,
+            departement
+        });
         return await this.programmeRepository.save(programme);
     }
 
