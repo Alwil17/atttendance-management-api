@@ -4,7 +4,7 @@ import { User } from "../entity/User.entity";
 import * as bcrypt from 'bcrypt';
 
 export class UserService {
-    private userRepository = AppDataSource.getRepository(User);
+    private readonly userRepository = AppDataSource.getRepository(User);
 
     async createUser(data: CreateUserDto): Promise<User> {
         if (data.password) {
