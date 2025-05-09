@@ -35,9 +35,26 @@ export class UniversiteService {
         });
     }
 
-    async updateUniversite(id: string, data: Partial<Universite>): Promise<Universite | null> {
-        await this.universiteRepository.update(id, data);
-        return this.getUniversiteById(id);
+    async updateUniversite(id: string, data: Partial<CreateUniversiteDto>): Promise<Universite | null> {
+        const universite = await this.universiteRepository.findOneBy({ id });
+        if (!universite) return null;
+    
+        const { organisationId, responsableId, ...rest } = data;
+    
+        // Si un nouvel ID d'organisation est fourni
+        if (organisationId) {
+            universite.organisation = await this.organisationRepo.findOneByOrFail({ id: organisationId });
+        }
+    
+        // Si un nouvel ID de responsable est fourni
+        if (responsableId) {
+            universite.responsable = await this.userRepo.findOneByOrFail({ id: responsableId });
+        }
+    
+        // Mise à jour des autres champs simples
+        Object.assign(universite, rest);
+    
+        return await this.universiteRepository.save(universite);
     }
 
     async deleteUniversite(id: string): Promise<void> {
