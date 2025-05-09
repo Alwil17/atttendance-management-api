@@ -29,9 +29,21 @@ export class DepartementService {
         return await this.departementRepository.find({ relations: {programs: true,} });
     }
 
-    async updateDepartement(id: string, data: Partial<Departement>): Promise<Departement | null> {
-        await this.departementRepository.update(id, data);
-        return this.getDepartementById(id);
+    async updateDepartement(id: string, data: Partial<CreateDepartementDto>): Promise<Departement | null> {
+        const departement = await this.departementRepository.findOneBy({ id });
+        if (!departement) return null;
+
+        const { universityId, ...rest } = data;
+
+        // Si un nouvel ID d'université est fourni
+        if (universityId) {
+            departement.university = await this.universityRepository.findOneByOrFail({ id: universityId });
+        }
+
+        // Mise à jour des autres champs simples
+        Object.assign(departement, rest);
+
+        return await this.departementRepository.save(departement);
     }
 
     async deleteDepartement(id: string): Promise<void> {

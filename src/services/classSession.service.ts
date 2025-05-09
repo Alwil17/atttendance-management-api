@@ -44,9 +44,36 @@ export class ClassSessionService {
         });
     }
 
-    async updateClassSession(id: string, data: Partial<ClassSession>): Promise<ClassSession | null> {
-        await this.sessionRepository.update(id, data);
-        return this.getClassSessionById(id);
+    async updateClassSession(id: string, data: Partial<CreateClassSessionDto>): Promise<ClassSession | null> {
+        const session = await this.sessionRepository.findOneBy({ id });
+        if (!session) return null;
+
+        const { academicYearId, professorId, classRepresentativeId, courseId, ...rest } = data;
+
+        // Si un nouvel ID d'année académique est fourni
+        if (academicYearId) {
+            session.academicYear = await this.academicYearRepository.findOneByOrFail({ id: academicYearId });
+        }
+
+        // Si un nouvel ID de professeur est fourni
+        if (professorId) {
+            session.professor = await this.userRepo.findOneByOrFail({ id: professorId });
+        }
+
+        // Si un nouvel ID de représentant de classe est fourni
+        if (classRepresentativeId) {
+            session.classRepresentative = await this.userRepo.findOneByOrFail({ id: classRepresentativeId });
+        }
+
+        // Si un nouvel ID de cours est fourni
+        if (courseId) {
+            session.course = await this.courseRepository.findOneByOrFail({ id: courseId });
+        }
+
+        // Mise à jour des autres champs simples
+        Object.assign(session, rest);
+
+        return await this.sessionRepository.save(session);
     }
 
     async deleteClassSession(id: string): Promise<void> {

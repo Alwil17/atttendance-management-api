@@ -28,9 +28,21 @@ export class CourseService {
         return await this.courseRepository.find();
     }
 
-    async updateCourse(id: string, data: Partial<Course>): Promise<Course | null> {
-        await this.courseRepository.update(id, data);
-        return this.getCourseById(id);
+    async updateCourse(id: string, data: Partial<CreateCourseDto>): Promise<Course | null> {
+        const course = await this.courseRepository.findOneBy({ id });
+        if (!course) return null;
+
+        const { programmeId, ...rest } = data;
+
+        // Si un nouvel ID de programme est fourni
+        if (programmeId) {
+            course.programme = await this.programRepository.findOneByOrFail({ id: programmeId });
+        }
+
+        // Mise à jour des autres champs simples
+        Object.assign(course, rest);
+
+        return await this.courseRepository.save(course);
     }
 
     async deleteCourse(id: string): Promise<void> {
