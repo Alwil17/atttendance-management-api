@@ -1,11 +1,20 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateDepartementDto } from "../dto/departement.dto";
 import { Departement } from "../entity/Departement.entity";
+import { Universite } from "../entity/Universite.entity";
 
 export class DepartementService {
-    private departementRepository = AppDataSource.getRepository(Departement);
+    private readonly departementRepository = AppDataSource.getRepository(Departement);
+    private readonly universityRepository = AppDataSource.getRepository(Universite);
 
-    async createDepartement(data: Partial<Departement>): Promise<Departement> {
-        const departement = this.departementRepository.create(data);
+    async createDepartement(data: Partial<CreateDepartementDto>): Promise<Departement> {
+        const university = await this.universityRepository.findOneByOrFail({ id: data.universityId});
+
+        const {universityId, ...rest } = data;
+        const departement = this.departementRepository.create({
+            ...rest,
+            university
+        });
         return await this.departementRepository.save(departement);
     }
 

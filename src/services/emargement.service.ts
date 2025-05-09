@@ -1,11 +1,24 @@
 import { AppDataSource } from "../config/data-source";
+import { CreateEmargementDto } from "../dto/emargement.dto";
+import { ClassSession } from "../entity/ClassSession.entity";
 import { Emargement, EmargementStatus } from "../entity/Emargement.entity";
+import { User } from "../entity/User.entity";
 
 export class EmargementService {
-    private emargementRepository = AppDataSource.getRepository(Emargement);
+    private readonly emargementRepository = AppDataSource.getRepository(Emargement);
+    private readonly userRepo = AppDataSource.getRepository(User);
+    private readonly sessionRepository = AppDataSource.getRepository(ClassSession);
 
-    async createEmargement(data: Partial<Emargement>): Promise<Emargement> {
-        const emargement = this.emargementRepository.create(data);
+    async createEmargement(data: Partial<CreateEmargementDto>): Promise<Emargement> {
+        const professor = await this.userRepo.findOneByOrFail({ id: data.professorId });
+        const classSession = await this.sessionRepository.findOneByOrFail({ id: data.classSessionId });
+
+        const { professorId, classSessionId, ...rest } = data;
+        const emargement = this.emargementRepository.create({
+            ...rest,
+            professor,
+            classSession
+        });
         return await this.emargementRepository.save(emargement);
     }
 
