@@ -3,8 +3,6 @@ import { CreateClassSessionDto } from "../dto/class-session.dto";
 import { AcademicYear } from "../entity/AcademicYear.entity";
 import { ClassSession } from "../entity/ClassSession.entity";
 import { Course } from "../entity/Course.entity";
-import { Organisation } from "../entity/Organisation.entity";
-import { Universite } from "../entity/Universite.entity";
 import { User } from "../entity/User.entity";
 
 export class ClassSessionService {
