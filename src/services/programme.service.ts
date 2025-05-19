@@ -26,7 +26,7 @@ export class ProgrammeService {
     }
 
     async getAllProgrammes(): Promise<Programme[]> {
-        return await this.programmeRepository.find({ relations: {courses: true} });
+        return await this.programmeRepository.find({ order: { updatedAt: "DESC" }, relations: {courses: true} });
     }
 
     async updateProgramme(id: string, data: Partial<CreateProgrammeDto>): Promise<Programme | null> {
