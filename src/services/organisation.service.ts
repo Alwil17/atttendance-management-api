@@ -18,7 +18,7 @@ export class OrganisationService {
     }
 
     async getAllOrganisations(): Promise<Organisation[]> {
-        return await this.organisationRepository.find({ relations: { universites: true } });
+        return await this.organisationRepository.find({ order: { updatedAt: "DESC" }, relations: { universites: true } });
     }
 
     async updateOrganisation(id: string, data: Partial<Organisation>): Promise<Organisation | null> {
