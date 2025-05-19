@@ -25,7 +25,7 @@ export class CourseService {
     }
 
     async getAllCourses(): Promise<Course[]> {
-        return await this.courseRepository.find();
+        return await this.courseRepository.find({ order: { updatedAt: "DESC" } });
     }
 
     async updateCourse(id: string, data: Partial<CreateCourseDto>): Promise<Course | null> {
