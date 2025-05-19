@@ -38,6 +38,7 @@ export class ClassSessionService {
 
     async getAllClassSessions(): Promise<ClassSession[]> {
         return await this.sessionRepository.find({
+            order: { updatedAt: "DESC" },
             relations: { academicYear: true, course: true, professor: true, classRepresentative: true }
         });
     }
@@ -95,6 +96,7 @@ export class ClassSessionService {
             // Filter by day of week (e.g., 'Monday')
             query = query.andWhere("DATENAME(WEEKDAY, session.date) = :day", { day });
         }
+        query = query.orderBy("session.updatedAt", "DESC");
         return await query.getMany();
     }
 }
