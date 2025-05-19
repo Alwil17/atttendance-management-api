@@ -26,7 +26,7 @@ export class DepartementService {
     }
 
     async getAllDepartements(): Promise<Departement[]> {
-        return await this.departementRepository.find({ relations: {programs: true,} });
+        return await this.departementRepository.find({ order: { updatedAt: "DESC" }, relations: {programs: true,} });
     }
 
     async updateDepartement(id: string, data: Partial<CreateDepartementDto>): Promise<Departement | null> {

@@ -31,6 +31,7 @@ export class EmargementService {
 
     async getAllEmargements(): Promise<Emargement[]> {
         return await this.emargementRepository.find({
+            order: { updatedAt: "DESC" },
             relations: { classSession: true, professor: true}
         });
     }
@@ -82,6 +83,7 @@ export class EmargementService {
     async getEmargementsByTeacher(teacherId: string): Promise<Emargement[]> {
         return await this.emargementRepository.find({
             where: { professor: { id: teacherId } },
+            order: { updatedAt: "DESC" },
             relations: { classSession: true, professor: true }
         });
     }
